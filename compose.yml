@@ -1,0 +1,31 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: wealth-ledger-postgres
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_DB: wealth_ledger
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      TZ: UTC
+      PGTZ: UTC
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - wealth_ledger_postgres_data:/var/lib/postgresql/data
+
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U root -d wealth_ledger"
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  wealth_ledger_postgres_data:
