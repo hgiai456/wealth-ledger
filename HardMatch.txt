@@ -1,0 +1,3 @@
+Câu hỏi đặt ra ở đây về Systems Design
+ - Nếu sử dụng Modular Monolith thì có lợi gì đối với Single Module truyền thống
+ - Tìm hiểu thêm về Annotation @Autowrited, @Component, @Bean

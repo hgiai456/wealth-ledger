@@ -1,25 +1,45 @@
 package com.giaidev.core.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.MappedSuperclass;
 import lombok.Getter;
-import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.Instant;
 
 @Getter
-@Setter
 @MappedSuperclass
-public abstract class BaseEntity { /// Other Entity Reuse this to avoid to duplicate attribute declaration
+@EntityListeners(AuditingEntityListener.class)
+public abstract class BaseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(
+            name = "id",
+            nullable = false,
+            updatable = false,
+            length = 36
+    )
     private String id;
 
-    @CreationTimestamp
-    @Column(updatable = false)
+    @CreatedDate
+    @Column(
+            name = "created_at",
+            nullable = false,
+            updatable = false
+    )
     private Instant createdAt;
 
-    @UpdateTimestamp
+    @LastModifiedDate
+    @Column(
+            name = "updated_at",
+            nullable = false
+    )
     private Instant updatedAt;
 }

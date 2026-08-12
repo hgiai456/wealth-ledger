@@ -1,8 +1,8 @@
 package com.giaidev.identity.mapper;
 
-import com.giaidev.identity.dto.request.RoleRequest;
-import com.giaidev.identity.dto.response.RoleResponse;
-import com.giaidev.identity.entity.Role;
+import com.giaidev.identity.web.request.RoleRequest;
+import com.giaidev.identity.web.response.RoleResponse;
+import com.giaidev.identity.domain.entity.Role;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
