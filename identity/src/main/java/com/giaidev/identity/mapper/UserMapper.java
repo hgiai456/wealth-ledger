@@ -2,10 +2,10 @@ package com.giaidev.identity.mapper;
 
 import java.util.List;
 
-import com.giaidev.identity.web.request.UserCreationRequest;
-import com.giaidev.identity.web.request.UserUpdateRequest;
-import com.giaidev.identity.web.response.UserResponse;
-import com.giaidev.identity.domain.entity.User;
+import com.giaidev.identity.dto.request.UserCreationRequest;
+import com.giaidev.identity.dto.request.UserUpdateRequest;
+import com.giaidev.identity.dto.response.UserResponse;
+import com.giaidev.identity.entity.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;

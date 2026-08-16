@@ -21,6 +21,12 @@
 
         <dependency>
             <groupId>com.giaidev</groupId>
+            <artifactId>ledger</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.giaidev</groupId>
             <artifactId>identity</artifactId>
             <version>${project.version}</version>
         </dependency>

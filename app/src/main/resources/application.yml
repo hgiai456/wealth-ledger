@@ -9,8 +9,8 @@ spring:
 
   datasource:
     url: ${DB_URL:jdbc:postgresql://localhost:5432/wealth_ledger}
-    username: ${DB_USERNAME:root}
-    password: ${DB_PASSWORD:root}
+    username: ${DB_USERNAME:hgiai456}
+    password: ${DB_PASSWORD:Dhg3012.}
     driver-class-name: org.postgresql.Driver
 
     hikari:
@@ -33,6 +33,6 @@ app:
     enabled: false
 
 jwt:
-  signerKey: ${JWT_SIGNER_KEY}
+  signerKey: ${JWT_SIGNER_KEY:1TjXchw5FloESb63Kc+DFhTARvpWL4jUGCwfGWxuG5SIf/1y/LgJxHnMqaF6A/ij}
   valid-duration: 3600
   refreshable-duration: 360000
