@@ -1,10 +1,10 @@
 package com.giaidev.identity.service;
 
 import com.giaidev.core.exception.AppException;
-import com.giaidev.core.exception.ErrorCode;
 import com.giaidev.identity.constant.PredefinedRole;
 import com.giaidev.identity.entity.Role;
 import com.giaidev.identity.entity.User;
+import com.giaidev.identity.exception.IdentityErrorCode;
 import com.giaidev.identity.repository.RoleRepository;
 import com.giaidev.identity.repository.UserRepository;
 import com.giaidev.identity.mapper.UserMapper;
@@ -21,9 +21,11 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 
 @Service
 @RequiredArgsConstructor // Sẽ tạo 1 constructor
@@ -36,34 +38,38 @@ public class UserService {
     PasswordEncoder passwordEncoder;
     RoleRepository roleRepository;
 
+    @Transactional
     public UserResponse getMyInfo() {
         var context = SecurityContextHolder.getContext();
         String name = context.getAuthentication().getName();
 
-        User user = userRepository.findByUsername(name).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        User user = userRepository.findByUsername(name).orElseThrow(() -> new AppException(IdentityErrorCode.USER_NOT_EXISTED));
         return userMapper.toUserResponse(user);
     }
-
+    @Transactional
     public UserResponse createUser(UserCreationRequest request) {
-
-        log.info("Create user - UserService");
+        String normalizedEmail = request.getEmail()
+                        .trim()
+                .toLowerCase(Locale.ROOT);
 
         if (userRepository.existsByUsername((request.getUsername())))
-            throw new AppException(ErrorCode.USER_EXISTED); // Gọi lỗi bằng Enum lỗi
+            throw new AppException(IdentityErrorCode.USER_EXISTED); // Gọi lỗi bằng Enum lỗi
+
+        if ((userRepository.existsByEmailIgnoreCase(normalizedEmail)))
+            throw new AppException(IdentityErrorCode.EMAIL_EXISTED);
 
         // Chuyển đổi tu Request thành Entity(Object)
         User user = userMapper.toUser(request); // request.getPassword() => password user gui xuong
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-
 
         HashSet<Role> roles = new HashSet<>();
         roleRepository.findById(PredefinedRole.USER_ROLE).ifPresent(roles::add);
         user.setRoles(roles);
 
         try {
-            user = userRepository.save(user);
+            user = userRepository.saveAndFlush(user);
         } catch (DataIntegrityViolationException exception) {
-            throw new AppException(ErrorCode.USER_EXISTED);
+            throw new AppException(IdentityErrorCode.USER_EXISTED);
         }
 
         // Sử dụng Mapper: Chuyển đổi Entity => Response, tiện lưu vào db luôn
@@ -76,6 +82,7 @@ public class UserService {
     // có phải là ADMIN không mới được quyền truy cập
     // PreAuthorize sẽ kiểm tra trước khi vào method
     //    @PreAuthorize("hasAuthority('APPROVE_POST')")
+    @Transactional
     @PreAuthorize("hasRole('ADMIN')")
     // khi dung hasAuthority thi xac thuc scope khong can ROLE_
     // (thuong su dung de authorize permission)
@@ -86,6 +93,7 @@ public class UserService {
         return userMapper.toUserResponse(userRepository.findAll());
     }
 
+    @Transactional
     @PostAuthorize("returnObject.username == authentication.name")
     // PostAuthorize là nó sẽ kiểm tra khi method được thực hiện xong nếu như bạn thỏa điều kiện
     // thì return còn không thì chặn lại
@@ -96,14 +104,32 @@ public class UserService {
                 userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found")));
     }
 
+    @Transactional
     public UserResponse updateUser(String userId, UserUpdateRequest request) {
+
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
         userMapper.updateUser(user, request);
 
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
-        var roles = roleRepository.findAllById(request.getRoles());
-        user.setRoles(new HashSet<>(roles));
+
+        if(request.getEmail() != null){
+            String normalizedEmail = request.getEmail()
+                    .trim()
+                    .toLowerCase(Locale.ROOT);
+
+            if(userRepository.existsByEmailIgnoreCaseAndIdNot(normalizedEmail, userId)){
+                throw new AppException(IdentityErrorCode.EMAIL_EXISTED);
+            }
+
+            user.setEmail(normalizedEmail);
+        }
+
+
+        if (request.getRoles() != null) {
+            var roles = roleRepository.findAllById(request.getRoles());
+            user.setRoles(new HashSet<>(roles));
+        }
 
         return userMapper.toUserResponse(userRepository.save(user));
     }

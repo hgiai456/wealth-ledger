@@ -3,7 +3,7 @@ package com.giaidev.identity.configuration;
 import java.io.IOException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.giaidev.core.exception.ErrorCode;
+import com.giaidev.core.exception.CommonErrorCode;
 
 
 import com.giaidev.core.dto.ApiResponse;
@@ -21,9 +21,9 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
             HttpServletRequest request, HttpServletResponse response, AuthenticationException authException)
             throws IOException, ServletException {
 
-        ErrorCode errorCode = ErrorCode.UNAUTHENTICATED;
+        CommonErrorCode errorCode = CommonErrorCode.UNAUTHENTICATED;
 
-        response.setStatus(ErrorCode.UNAUTHENTICATED.getStatusCode().value());
+        response.setStatus(CommonErrorCode.UNAUTHENTICATED.getStatusCode().value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         ApiResponse<?> apiResponse = ApiResponse.builder()
                 .code(errorCode.getCode())

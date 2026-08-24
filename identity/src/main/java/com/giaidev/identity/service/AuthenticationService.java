@@ -1,9 +1,10 @@
 package com.giaidev.identity.service;
 
 import com.giaidev.core.exception.AppException;
-import com.giaidev.core.exception.ErrorCode;
+import com.giaidev.core.exception.CommonErrorCode;
 import com.giaidev.identity.entity.InvalidatedToken;
 import com.giaidev.identity.entity.User;
+import com.giaidev.identity.exception.IdentityErrorCode;
 import com.giaidev.identity.repository.InvalidatedTokenRepository;
 import com.giaidev.identity.repository.UserRepository;
 import com.giaidev.identity.dto.request.AuthenticationRequest;
@@ -75,12 +76,12 @@ public class AuthenticationService {
 
         var user = userRepository
                 .findByUsername(request.getUsername())
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+                .orElseThrow(() -> new AppException(IdentityErrorCode.USER_NOT_EXISTED));
 
         boolean authenticated = passwordEncoder.matches(request.getPassword(), user.getPassword());
 
         if (!authenticated) {
-            throw new AppException(ErrorCode.UNAUTHENTICATED);
+            throw new AppException(CommonErrorCode.UNAUTHENTICATED);
         }
 
         var token = generateToken(user);
@@ -150,7 +151,7 @@ public class AuthenticationService {
         var user = userRepository
                 .findByUsername(username)
                 .orElseThrow( // find username in db
-                        () -> new AppException(ErrorCode.UNAUTHENTICATED) // if it's not exist => throw error message
+                        () -> new AppException(IdentityErrorCode.INVALID_CREDENTIALS) // if it's not exist => throw error message
                         );
 
         var token = generateToken(user); // Create a token
@@ -176,13 +177,13 @@ public class AuthenticationService {
         var verified = signedJWT.verify(verifier);
 
         if (!(verified && expiryTime.after(new Date()))) { // Kiem tra xem token da het han chua
-            throw new AppException(ErrorCode.UNAUTHENTICATED);
+            throw new AppException(CommonErrorCode.UNAUTHENTICATED);
         }
 
         if (invalidatedTokenRepository.existsById(signedJWT
                 .getJWTClaimsSet()
                 .getJWTID())) // Kiem tra neu nhu trong bang InvalidatedToken co token do ton tai thi tra ra loi
-        throw new AppException(ErrorCode.UNAUTHENTICATED);
+        throw new AppException(CommonErrorCode.UNAUTHENTICATED);
 
         return signedJWT;
     }

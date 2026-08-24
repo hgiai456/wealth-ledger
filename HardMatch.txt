@@ -1,3 +1,11 @@
-Câu hỏi đặt ra ở đây về Systems Design
+Câu hỏi đặt ra ở đây về Systems Design và nghiệp vụ
  - Nếu sử dụng Modular Monolith thì có lợi gì đối với Single Module truyền thống
  - Tìm hiểu thêm về Annotation @Autowrited, @Component, @Bean
+ - Wealth Ledger làm ra để làm gì ? Có bao nhiêu nghiệp vụ chính, chức năng gì quan trong ?
+ - Phạm vi của hệ thống này là gì ?
+ - Ví dụ Nguồn tiền chuyển khoản tôi có thể làm mockAPI của ngân hàng được không ?
+ - Vậy Role Admin thì có chức năng gì trong hệ thống ?
+ - Module Core thì tôi tái dụng sử code trong đấy có đúng theo chuẩn Modular Monolith Layered,
+ có đảm bảo được tính độc lập của từng module không ?
+  - Nợ thì tự nhập từ bằng phím phải không ?
+  - Spring Boot theo kiến trúc này thì có những lớp bảo mật nào ?

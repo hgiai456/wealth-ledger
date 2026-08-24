@@ -22,8 +22,8 @@ public class GlobalExceptionHandler {
     ResponseEntity<ApiResponse> handlingRunTimeException(RuntimeException exception) {
         ApiResponse apiResponse = new ApiResponse();
 
-        apiResponse.setCode(ErrorCode.UNCATEGORIZED_EXCEPTION.getCode());
-        apiResponse.setMessage(ErrorCode.UNCATEGORIZED_EXCEPTION.getMessage());
+        apiResponse.setCode(CommonErrorCode.UNCATEGORIZED_EXCEPTION.getCode());
+        apiResponse.setMessage(CommonErrorCode.UNCATEGORIZED_EXCEPTION.getMessage());
 
         log.error("Unhandled runtime exception", exception);
         return ResponseEntity.badRequest().body(apiResponse); // badReq la status 400 => In lõi message ra
@@ -32,7 +32,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(value = AppException.class)
     ResponseEntity<ApiResponse> handlingAppException(AppException exception) {
-        ErrorCode errorCode = exception.getErrorCode();
+        ErrorDefinition errorCode = exception.getErrorCode();
         ApiResponse apiResponse = new ApiResponse();
 
         apiResponse.setCode(errorCode.getCode());
@@ -44,8 +44,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(value = AccessDeniedException.class)
     ResponseEntity<ApiResponse> handlingAccessDeniedException(AccessDeniedException exception) {
-        ErrorCode errorCode =
-                ErrorCode.UNAUTHORIZE; // set code bằng UNAUTHORIZE để bắt exception của AccessDeniedException
+        CommonErrorCode errorCode =
+                CommonErrorCode.UNAUTHORIZE; // set code bằng UNAUTHORIZE để bắt exception của AccessDeniedException
 
         return ResponseEntity.status(errorCode.getStatusCode())
                 .body(ApiResponse.builder()
@@ -57,10 +57,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = MethodArgumentNotValidException.class) // Xử lý trả về message lỗi khi vi phạm ràng buộc
     ResponseEntity<ApiResponse> handlingValidation(MethodArgumentNotValidException exception) {
         String enumKey = exception.getFieldError().getDefaultMessage();
-        ErrorCode errorCode = ErrorCode.INVALID_KEY;
+        CommonErrorCode errorCode = CommonErrorCode.INVALID_REQUEST;
         Map<String, Object> attributes = null;
         try {
-            errorCode = ErrorCode.valueOf(enumKey);
+            errorCode = CommonErrorCode.valueOf(enumKey);
 
             var constraintViolation =
                     exception.getBindingResult().getAllErrors().getFirst().unwrap(ConstraintViolation.class);

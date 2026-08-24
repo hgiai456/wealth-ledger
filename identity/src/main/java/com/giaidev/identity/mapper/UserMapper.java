@@ -6,9 +6,7 @@ import com.giaidev.identity.dto.request.UserCreationRequest;
 import com.giaidev.identity.dto.request.UserUpdateRequest;
 import com.giaidev.identity.dto.response.UserResponse;
 import com.giaidev.identity.entity.User;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
+import org.mapstruct.*;
 
 
 @Mapper(componentModel = "spring")
@@ -21,6 +19,13 @@ public interface UserMapper {
 
     List<UserResponse> toUserResponse(List<User> users);
 
+    @BeanMapping(
+            nullValuePropertyMappingStrategy =
+                    NullValuePropertyMappingStrategy.IGNORE
+    )
     @Mapping(target = "roles", ignore = true)
+    @Mapping(target = "password", ignore = true)
+    @Mapping(target = "email", ignore = true)
+    @Mapping(target = "status", ignore = true)
     void updateUser(@MappingTarget User user, UserUpdateRequest request);
 }
