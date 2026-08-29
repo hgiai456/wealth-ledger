@@ -1,5 +1,22 @@
 Câu hỏi đặt ra ở đây về Systems Design và nghiệp vụ
  - Nếu sử dụng Modular Monolith thì có lợi gì đối với Single Module truyền thống
+     Ưu điểm của Modular Monolith
+     - Tách rõ identity, ledger, investment, portfolio.
+     - Hạn chế code nghiệp vụ trộn lẫn.
+     - Vẫn deploy một ứng dụng và không có độ phức tạp mạng như microservice.
+     - Vẫn sử dụng transaction database thông thường.
+     - Dễ chia công việc theo nhóm/module.
+     - Dễ tách một module thành service độc lập trong tương lai.
+     - Maven có thể phát hiện dependency thiếu hoặc dependency vòng.
+     Nhược điểm
+     - Nhiều pom.xml, DTO, mapper và cấu hình hơn.
+     - Build toàn bộ có thể chậm hơn.
+     - Dễ biến core thành nơi chứa mọi thứ.
+     - Cần quy ước hoặc ArchUnit để thực sự bảo vệ ranh giới.
+     - Các module vẫn chạy chung JVM nên một lỗi nghiêm trọng có thể ảnh hưởng toàn ứng dụng.
+     - Không deploy hoặc scale riêng từng module như microservice.
+     - Giao tiếp giữa module cần thiết kế cẩn thận hơn Single Module.
+
  - Tìm hiểu thêm về Annotation @Autowrited, @Component, @Bean
  - Wealth Ledger làm ra để làm gì ? Có bao nhiêu nghiệp vụ chính, chức năng gì quan trong ?
  - Phạm vi của hệ thống này là gì ?
@@ -9,3 +26,4 @@ Câu hỏi đặt ra ở đây về Systems Design và nghiệp vụ
  có đảm bảo được tính độc lập của từng module không ?
   - Nợ thì tự nhập từ bằng phím phải không ?
   - Spring Boot theo kiến trúc này thì có những lớp bảo mật nào ?
+  - Bạn thấy exception của tôi có đúng chuẩn của doanh nghiệp không theo Modular Monolith Layered.

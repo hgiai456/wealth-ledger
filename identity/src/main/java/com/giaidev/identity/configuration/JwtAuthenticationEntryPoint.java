@@ -3,6 +3,7 @@ package com.giaidev.identity.configuration;
 import java.io.IOException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.giaidev.core.dto.ApiErrorResponse;
 import com.giaidev.core.exception.CommonErrorCode;
 
 
@@ -11,28 +12,38 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthenticationEntryPoint;
 import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.stereotype.Component;
 
+@Component
+@RequiredArgsConstructor
 public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
+
+    private final ObjectMapper objectMapper;
+
+    private final BearerTokenAuthenticationEntryPoint delegate = new BearerTokenAuthenticationEntryPoint();
+
     @Override
     public void commence(
-            HttpServletRequest request, HttpServletResponse response, AuthenticationException authException)
-            throws IOException, ServletException {
+            HttpServletRequest request, HttpServletResponse response, AuthenticationException exception)
+            throws IOException {
 
         CommonErrorCode errorCode = CommonErrorCode.UNAUTHENTICATED;
 
-        response.setStatus(CommonErrorCode.UNAUTHENTICATED.getStatusCode().value());
-        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        ApiResponse<?> apiResponse = ApiResponse.builder()
-                .code(errorCode.getCode())
-                .message(errorCode.getMessage())
-                .build(); // Trả vể entity Response API đã được defined
+        response.setContentType(
+                MediaType.APPLICATION_JSON_VALUE
+        );
 
-        ObjectMapper objectMapper = new ObjectMapper();
-
-        response.getWriter().write(objectMapper.writeValueAsString(apiResponse)); // convert kieu json => String
-        response.flushBuffer();
+        objectMapper.writeValue(
+                response.getOutputStream(),
+               ApiResponse.error(
+                       errorCode.getCode(),
+                       errorCode.getMessage()
+               )
+        );
     }
 }

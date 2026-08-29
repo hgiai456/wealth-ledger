@@ -35,7 +35,7 @@ public enum IdentityErrorCode implements ErrorDefinition {
 
     INVALID_DOB(
             2005,
-            "Date of birth is invalid",
+            "User must be at least {min} years old",
             HttpStatus.BAD_REQUEST
     ),
 

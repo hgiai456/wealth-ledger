@@ -4,6 +4,7 @@ import java.time.LocalDate;
 
 import com.giaidev.identity.validator.DobConstraint;
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 
@@ -30,6 +31,7 @@ public class UserCreationRequest {
     String firstName;
     String lastName;
 
-    @DobConstraint(min = 16, message = "INVALID_DOB")
+    @NotNull(message = "Date of birth is required")
+    @DobConstraint(min = 16)
     LocalDate dob;
 }

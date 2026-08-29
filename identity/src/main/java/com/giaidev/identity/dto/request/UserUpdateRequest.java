@@ -20,6 +20,7 @@ import lombok.experimental.FieldDefaults;
 public class UserUpdateRequest {
     @Size(min = 8, message = "PASSWORD_INVALID") // ít nhất 8 ký tự nếu không thì trả ra message lỗi
     String password;
+
     String firstName;
     String lastName;
 
@@ -27,8 +28,8 @@ public class UserUpdateRequest {
     String email;
 
     UserStatus status;
-    @DobConstraint(min = 18, message = "INVALID_DOB") // custom annotation
 
+    @DobConstraint(min = 16) // custom annotation
     LocalDate dob;
     List<String> roles;
 }

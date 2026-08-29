@@ -68,7 +68,7 @@ public class UserController {
     // Tầng Service có chức năng xử lý những dữ liệu và logic sau đó sẽ được controller gọi để trả về dữ liệu lên api
 
     @PutMapping("/{userId}")
-    ApiResponse<UserResponse> updateUser(@PathVariable String userId, @RequestBody UserUpdateRequest request) {
+    ApiResponse<UserResponse> updateUser(@PathVariable String userId, @RequestBody @Valid UserUpdateRequest request) {
         ApiResponse<UserResponse> apiResponse = new ApiResponse<>();
         apiResponse.setResult(userService.updateUser(userId, request));
         return apiResponse;
