@@ -4,6 +4,7 @@ import com.giaidev.core.exception.AppException;
 import com.giaidev.core.exception.CommonErrorCode;
 import com.giaidev.identity.entity.InvalidatedToken;
 import com.giaidev.identity.entity.User;
+import com.giaidev.identity.enums.UserStatus;
 import com.giaidev.identity.exception.IdentityErrorCode;
 import com.giaidev.identity.repository.InvalidatedTokenRepository;
 import com.giaidev.identity.repository.UserRepository;
@@ -72,8 +73,6 @@ public class AuthenticationService {
 
     @Transactional(readOnly = true)
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
-        log.info("SignerKey: {}", SIGNER_KEY);
-
         var user = userRepository
                 .findByUsername(request.getUsername())
                 .orElseThrow(() -> new AppException(IdentityErrorCode.USER_NOT_EXISTED));
@@ -82,6 +81,10 @@ public class AuthenticationService {
 
         if (!authenticated) {
             throw new AppException(CommonErrorCode.UNAUTHENTICATED);
+        }
+
+        if(user.getStatus() != UserStatus.ACTIVE){
+            throw new AppException(IdentityErrorCode.USER_DISABLED);
         }
 
         var token = generateToken(user);
@@ -99,6 +102,7 @@ public class AuthenticationService {
                 .expirationTime(new Date(
                         Instant.now().plus(VALID_DURATION, ChronoUnit.SECONDS).toEpochMilli()))
                 .jwtID(UUID.randomUUID().toString())
+                .claim("user_id", user.getId())
                 .claim("scope", buildScope(user))
                 .build();
 
@@ -135,7 +139,6 @@ public class AuthenticationService {
     public AuthenticationResponse refreshToken(RefreshRequest request) throws ParseException, JOSEException {
 
         var signJWT = verifyToken(request.getToken(), true);
-
         var jti = signJWT.getJWTClaimsSet().getJWTID(); // Lay jwt token id trong token
         var expiryTime = signJWT.getJWTClaimsSet().getExpirationTime(); // Lay expiryTime trong token
 

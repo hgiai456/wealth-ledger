@@ -4,6 +4,7 @@ import com.giaidev.core.exception.AppException;
 import com.giaidev.identity.constant.PredefinedRole;
 import com.giaidev.identity.entity.Role;
 import com.giaidev.identity.entity.User;
+import com.giaidev.identity.enums.UserStatus;
 import com.giaidev.identity.exception.IdentityErrorCode;
 import com.giaidev.identity.repository.RoleRepository;
 import com.giaidev.identity.repository.UserRepository;
@@ -104,15 +105,21 @@ public class UserService {
                 userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found")));
     }
 
+
     @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
     public UserResponse updateUser(String userId, UserUpdateRequest request) {
 
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
         userMapper.updateUser(user, request);
 
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        if(request.getPassword() != null && !request.getPassword().isBlank()){ //If password is not empty and exist space
+            user.setPassword(passwordEncoder.encode(request.getPassword()));
+        }
 
-
+        if (request.getStatus() != null) {
+            user.setStatus(request.getStatus());
+        }
         if(request.getEmail() != null){
             String normalizedEmail = request.getEmail()
                     .trim()
@@ -121,7 +128,6 @@ public class UserService {
             if(userRepository.existsByEmailIgnoreCaseAndIdNot(normalizedEmail, userId)){
                 throw new AppException(IdentityErrorCode.EMAIL_EXISTED);
             }
-
             user.setEmail(normalizedEmail);
         }
 

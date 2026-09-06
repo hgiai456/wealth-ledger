@@ -45,8 +45,6 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 public class User extends BaseEntity {
-
-
     @Column(
             name = "username",
             nullable = false,
@@ -90,7 +88,7 @@ public class User extends BaseEntity {
             nullable = false,
             length = 100
     )
-    private UserStatus status = UserStatus.PENDING;
+    private UserStatus status = UserStatus.ACTIVE;
 
     @Builder.Default
     @ManyToMany(fetch = FetchType.LAZY)

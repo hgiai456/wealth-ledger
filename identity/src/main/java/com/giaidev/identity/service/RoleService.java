@@ -38,7 +38,7 @@ public class RoleService {
         return roleRepository
                 .findAll() // Lấy tất cả roles
                 .stream()
-                //               .map(roleMapper::toRoleResponse) //Nay la su dung Lamda de rut ngan code
+                //.map(roleMapper::toRoleResponse) //Nay la su dung Lamda de rut ngan code
                 .map(role -> roleMapper.toRoleResponse(role)) // Chuyển đổi từ Role => RoleResponse
                 .toList(); // Để chuyển thành List
     }

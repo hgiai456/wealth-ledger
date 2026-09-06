@@ -7,6 +7,13 @@ spring:
   application:
     name: wealth-ledger
 
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    default-schema: ledger
+    schemas: ledger
+    create-schemas: true
+
   datasource:
     url: ${DB_URL:jdbc:postgresql://localhost:5432/wealth_ledger}
     username: ${DB_USERNAME:hgiai456}
