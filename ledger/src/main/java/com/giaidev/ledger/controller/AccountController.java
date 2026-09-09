@@ -28,4 +28,14 @@ public class AccountController {
         AccountResponse response =  accountService.create(request);
         return ApiResponse.success(response);
     }
+
+    @GetMapping("/my-accounts")
+    public ApiResponse<List<AccountResponse>> getAll(
+            @RequestParam(required = false)
+            AccountStatus status
+    ){
+        List<AccountResponse> accounts = accountService.getAll(status);
+
+        return ApiResponse.success(accounts);
+    }
 }

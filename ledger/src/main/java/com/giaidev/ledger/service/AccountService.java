@@ -5,6 +5,7 @@ import com.giaidev.core.security.CurrentUserProvider;
 import com.giaidev.ledger.dto.request.AccountCreationRequest;
 import com.giaidev.ledger.dto.response.AccountResponse;
 import com.giaidev.ledger.entity.Account;
+import com.giaidev.ledger.enums.AccountStatus;
 import com.giaidev.ledger.exception.LedgerErrorCode;
 import com.giaidev.ledger.mapper.AccountMapper;
 import com.giaidev.ledger.repository.AccountRepository;
@@ -12,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -48,5 +51,26 @@ public class AccountService {
            throw new AppException(LedgerErrorCode.ACCOUNT_NAME_EXISTED) ;
         }
     }
+
+    @Transactional(readOnly = true)
+    public List<AccountResponse> getAll(AccountStatus status){
+        String userId = currentUserProvider.getUserId();
+
+        List<Account> accounts;
+
+        if(status == null){
+            accounts = accountRepository.findAllByUserIdOrderByCreatedAtDesc(userId);
+        }else {
+            accounts = accountRepository.findAllByUserIdAndStatusOrderByCreatedAtDesc(
+                    userId,
+                    status
+            );
+
+
+        }
+
+        return accountMapper.toResponse(accounts);
+    }
+
 
 }
