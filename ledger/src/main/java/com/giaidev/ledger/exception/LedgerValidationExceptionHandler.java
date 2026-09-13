@@ -219,7 +219,7 @@ public class LedgerValidationExceptionHandler {
     ResponseEntity<ApiResponse<Void>> handleAccessDenied(
             AccessDeniedException exception
     ){
-        CommonErrorCode errorCode = CommonErrorCode.UNAUTHORIZE;
+        CommonErrorCode errorCode = CommonErrorCode.UNAUTHORIZE; //Declare ErrorCode
 
         log.error("Unhandled application exception", exception);
 

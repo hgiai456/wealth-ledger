@@ -37,7 +37,15 @@ public enum LedgerErrorCode implements ErrorDefinition {
             3005,
             "Cannot disable negative balance while the account balance is negative",
             HttpStatus.CONFLICT
+    ),
+
+    INSUFFICIENT_BALANCE(
+            3006,
+            "Account balance is insufficient",
+            HttpStatus.CONFLICT
     );
+
+
 
     private final int code;
     private final String message;

@@ -1,8 +1,10 @@
 package com.giaidev.ledger.entity;
 
 import com.giaidev.core.entity.BaseEntity;
+import com.giaidev.core.exception.AppException;
 import com.giaidev.ledger.enums.AccountStatus;
 import com.giaidev.ledger.enums.AccountType;
+import com.giaidev.ledger.exception.LedgerErrorCode;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -152,5 +154,70 @@ public class Account extends BaseEntity {
         }
         this.status = AccountStatus.CLOSED;
         this.closedAt = Objects.requireNonNull(closedAt);
+    }
+
+    private void ensureActive() {
+        if (status != AccountStatus.ACTIVE) {
+            throw new AppException(
+                    LedgerErrorCode.ACCOUNT_CLOSED
+            );
+        }
+    }
+
+    public BigDecimal debit(BigDecimal amount){
+        ensureActive();
+
+        BigDecimal normalizedAmount =
+                requirePositiveAmount(amount);
+
+        BigDecimal balanceAfter =
+                currentBalance.subtract(normalizedAmount);
+
+        if (!allowNegative && balanceAfter.signum() < 0) {
+            throw new AppException(
+                    LedgerErrorCode.INSUFFICIENT_BALANCE
+            );
+        }
+
+        this.currentBalance = balanceAfter;
+
+        return this.currentBalance;
+    }
+
+
+    private static BigDecimal requirePositiveAmount(
+            BigDecimal amount
+    ) {
+        Objects.requireNonNull(
+                amount,
+                "amount must not be null"
+        );
+
+        if (amount.signum() <= 0) {
+            throw new IllegalArgumentException(
+                    "amount must be greater than zero"
+            );
+        }
+
+        if (amount.stripTrailingZeros().scale() > 4) {
+            throw new IllegalArgumentException(
+                    "amount must have at most 4 decimal places"
+            );
+        }
+
+        return amount.setScale(4);
+    }
+
+
+    public BigDecimal credit(BigDecimal amount) {
+        ensureActive();
+
+        BigDecimal normalizedAmount =
+                requirePositiveAmount(amount);
+
+        this.currentBalance =
+                currentBalance.add(normalizedAmount);
+
+        return this.currentBalance;
     }
 }
