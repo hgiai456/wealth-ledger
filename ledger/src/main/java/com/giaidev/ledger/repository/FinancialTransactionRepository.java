@@ -20,7 +20,7 @@ public interface FinancialTransactionRepository extends JpaRepository<FinancialT
     );
 
     Page<FinancialTransaction>
-    findAllByUserIdOrderByTransactionDateDesc(
+    findAllByUserIdOrderByTransactionDateDescIdDesc(
             String userId,
             Pageable pageable
     );

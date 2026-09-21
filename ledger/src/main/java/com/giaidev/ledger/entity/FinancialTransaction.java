@@ -277,21 +277,26 @@ public class FinancialTransaction extends CreatedEntity {
     public void complete(Instant completedAt) {
         requirePending();
 
-        this.status = TransactionStatus.COMPLETED;
-        this.completedAt = Objects.requireNonNull(
+        Instant validatedTime = Objects.requireNonNull(
                 completedAt,
                 "completedAt must not be null"
         );
+
+        this.status = TransactionStatus.COMPLETED;
+        this.completedAt = validatedTime;
+
     }
 
     public void fail(Instant failedAt) {
         requirePending();
 
-        this.status = TransactionStatus.FAILED;
-        this.completedAt = Objects.requireNonNull(
+         Instant validatedTime = Objects.requireNonNull(
                 failedAt,
                 "failedAt must not be null"
         );
+
+        this.status = TransactionStatus.FAILED;
+        this.completedAt = validatedTime;
     }
 
     public void markReversed() {
@@ -300,7 +305,6 @@ public class FinancialTransaction extends CreatedEntity {
                     "Only completed transaction can be reversed"
             );
         }
-
         this.status = TransactionStatus.REVERSED;
     }
 
