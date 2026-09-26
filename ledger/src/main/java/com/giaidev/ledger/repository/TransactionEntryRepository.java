@@ -23,6 +23,8 @@ public interface TransactionEntryRepository
             Pageable pageable
     );
 
+    boolean existsByAccountId(String accountId);
+
 //    IdDesc/IdAsc dùng để phân định thứ tự khi nhiều bản ghi cùng thời gian.
 //    Nếu chỉ sort theo thời gian, các bản ghi bằng nhau có thể đổi vị trí giữa những lần truy vấn.
 }

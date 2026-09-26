@@ -179,7 +179,7 @@ public class Account extends BaseEntity {
             );
         }
 
-        this.currentBalance = balanceAfter;
+        this.currentBalance = requireSupportedBalance(balanceAfter);
 
         return this.currentBalance;
     }
@@ -215,9 +215,23 @@ public class Account extends BaseEntity {
         BigDecimal normalizedAmount =
                 requirePositiveAmount(amount);
 
-        this.currentBalance =
+       BigDecimal balanceAfter =
                 currentBalance.add(normalizedAmount);
 
-        return this.currentBalance;
+        return this.currentBalance = requireSupportedBalance(balanceAfter);
+    }
+
+    private static BigDecimal requireSupportedBalance(
+            BigDecimal balance
+    ) {
+        BigDecimal normalized = balance.setScale(4);
+
+        if (normalized.precision() > 19) {
+            throw new AppException(
+                    LedgerErrorCode.BALANCE_LIMIT_EXCEEDED
+            );
+        }
+
+        return normalized;
     }
 }

@@ -2,12 +2,14 @@ package com.giaidev.ledger.entity;
 
 import com.giaidev.core.entity.CreatedEntity;
 import com.giaidev.ledger.enums.EntryDirection;
+import com.giaidev.ledger.enums.TransactionType;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.Objects;
 
 @Entity
@@ -176,4 +178,6 @@ public class TransactionEntry extends CreatedEntity {
                 ? null
                 : value.trim();
     }
+
+
 }

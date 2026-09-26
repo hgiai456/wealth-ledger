@@ -32,6 +32,9 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
             HttpServletRequest request, HttpServletResponse response, AuthenticationException exception)
             throws IOException {
 
+        //Set Http status and header authentication before writing body
+        delegate.commence(request, response, exception);
+
         CommonErrorCode errorCode = CommonErrorCode.UNAUTHENTICATED;
 
         response.setContentType(

@@ -110,12 +110,44 @@ public class LedgerValidationExceptionHandler {
         }
     }
 
+    @ExceptionHandler(
+            org.springframework.dao.DataIntegrityViolationException.class
+    )
+    ResponseEntity<ApiResponse<Void>> handleDataIntegrity(
+            org.springframework.dao.DataIntegrityViolationException exception
+    ) {
+        Throwable cause = exception;
+
+        while (cause != null) {
+            if (cause instanceof
+                    org.hibernate.exception.ConstraintViolationException violation
+                    && "uk_transactions_user_idempotency".equals(
+                    violation.getConstraintName()
+            )) {
+
+                LedgerErrorCode error =
+                        LedgerErrorCode.IDEMPOTENCY_KEY_CONFLICT;
+
+                return ResponseEntity
+                        .status(error.getStatusCode())
+                        .body(ApiResponse.error(
+                                error.getCode(),
+                                error.getMessage()
+                        ));
+            }
+
+            cause = cause.getCause();
+        }
+
+        return handleUnexpectedException(exception);
+    }
+
     @ExceptionHandler(HandlerMethodValidationException.class)
     ResponseEntity<ApiErrorResponse> handleMethodValidation(
             HandlerMethodValidationException exception
     ) {
         List<FieldViolation> errors = exception
-                .getAllValidationResults()
+                .getParameterValidationResults()
                 .stream()
                 .flatMap(result -> result
                         .getResolvableErrors()

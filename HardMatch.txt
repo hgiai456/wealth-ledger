@@ -17,6 +17,7 @@ Câu hỏi đặt ra ở đây về Systems Design và nghiệp vụ
      - Không deploy hoặc scale riêng từng module như microservice.
      - Giao tiếp giữa module cần thiết kế cẩn thận hơn Single Module.
 
+
  - Tìm hiểu thêm về Annotation @Autowrited, @Component, @Bean
  - Wealth Ledger làm ra để làm gì ? Có bao nhiêu nghiệp vụ chính, chức năng gì quan trong ?
  - Phạm vi của hệ thống này là gì ?
